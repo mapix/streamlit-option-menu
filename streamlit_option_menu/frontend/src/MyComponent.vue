@@ -17,7 +17,7 @@
                 :style="styleObjectToString(styles['nav-item'])"
                 >
                     <hr :class="{vr: isHorizontal}" v-if="option === '---'" :style="styleObjectToString(styles['separator'])">
-                    <a v-else href="#" class="nav-link" :class="{active: i == selectedIndex, 'nav-link-horizontal':isHorizontal}" 
+                    <a v-else href="#" class="nav-link" :class="{active: false, 'nav-link-horizontal':isHorizontal}" 
                     @click="onClicked(i, option)" aria-current="page" 
                     :style="styleObjectToString(styles['nav-link']) + styleObjectToString(styles['nav-link-selected'], i == selectedIndex)">
                         <i class="icon" :class="icons[i]" :style="styleObjectToString(styles['icon'])"></i>
@@ -32,6 +32,7 @@
 import { ref } from "vue"
 import { Streamlit } from "streamlit-component-lib"
 import { useStreamlit } from "./streamlit"
+import { v4 as uuidv4 } from 'uuid'
 import "bootstrap/dist/css/bootstrap.min.css"
 import "bootstrap-icons/font/bootstrap-icons.css";
 
@@ -60,7 +61,7 @@ export default {
         const selectedIndex = ref(props.args.defaultIndex)
         const onClicked = (index, option) => {
             selectedIndex.value = index
-            Streamlit.setComponentValue(option)
+            Streamlit.setComponentValue({option, id: uuidv4()})
         }
         const styleObjectToString = (obj, condition) => {
             if (typeof condition === "undefined") {

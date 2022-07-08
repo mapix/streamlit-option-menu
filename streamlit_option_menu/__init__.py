@@ -36,11 +36,24 @@ else:
 
 def option_menu(menu_title, options, default_index=0, menu_icon=None, icons=None, orientation="vertical",
                 styles=None, key=None):
-    component_value = _component_func(options=options, 
-                key=key, defaultIndex=default_index, icons=icons, menuTitle=menu_title, 
-                menuIcon=menu_icon, default=options[default_index], 
+    event = _component_func(options=options,
+                key=key, defaultIndex=default_index, icons=icons, menuTitle=menu_title,
+                menuIcon=menu_icon, default=options[default_index],
                 orientation=orientation, styles=styles)
-    return component_value
+    if isinstance(event, str):
+        event = {'id': 'default', 'option': event}
+    action_id = event and event.get('id')
+    if action_id:
+        session_key = f'components/streamlit-option-menu/state/{key}/last_action_id'
+        if session_key not in st.session_state:
+            st.session_state[session_key] = action_id
+        else:
+            if action_id == st.session_state[session_key]:
+                event = None
+            else:
+                st.session_state[session_key] = action_id
+    return event
+
 
 # Create a second instance of our component whose `name` arg will vary
 # based on a text_input widget.
@@ -53,19 +66,20 @@ def option_menu(menu_title, options, default_index=0, menu_icon=None, icons=None
 if __name__ == "__main__":
     st.set_page_config(page_title="Option Menu", layout="wide")
     with st.sidebar:
-        selected = option_menu("Main Menu", ["Home", "Upload","---", "Tasks", 'Settings'], 
-        icons=['house', 'cloud-upload', None, "list-task", 'gear'], menu_icon="cast", default_index=1)
+        selected = option_menu("Main Menu", ["Home", "Upload","---", "Tasks", 'Settings'],
+        icons=['house', 'cloud-upload', None, "list-task", 'gear'], menu_icon="cast", default_index=1, key='top-nav')
+        st.write(selected)
 
-    selected2 = option_menu(None, ["Home", "Upload", "---", "Tasks", 'Settings'], 
-        icons=['house', 'cloud-upload', None, "list-task", 'gear'], 
+    selected2 = option_menu(None, ["Home", "Upload", "---", "Tasks", 'Settings'],
+        icons=['house', 'cloud-upload', None, "list-task", 'gear'],
         menu_icon="cast", default_index=0, orientation="horizontal")
 
-    selected3 = option_menu(None, ["Home", "Upload",  "Tasks", 'Settings'], 
-        icons=['house', 'cloud-upload', "list-task", 'gear'], 
+    selected3 = option_menu(None, ["Home", "Upload",  "Tasks", 'Settings'],
+        icons=['house', 'cloud-upload', "list-task", 'gear'],
         menu_icon="cast", default_index=0, orientation="horizontal",
         styles={
             "container": {"padding": "0!important", "background-color": "#fafafa"},
-            "icon": {"color": "orange", "font-size": "25px"}, 
+            "icon": {"color": "orange", "font-size": "25px"},
             "nav-link": {"font-size": "25px", "text-align": "left", "margin":"0px", "--hover-color": "#eee"},
             "nav-link-selected": {"background-color": "green"},
         }

@@ -38,7 +38,7 @@ def option_menu(menu_title, options, default_index=0, menu_icon=None, icons=None
                 styles=None, key=None):
     event = _component_func(options=options,
                 key=key, defaultIndex=default_index, icons=icons, menuTitle=menu_title,
-                menuIcon=menu_icon, default=options[default_index],
+                menuIcon=menu_icon, default=options[default_index] if default_index != -1 else None,
                 orientation=orientation, styles=styles)
     if isinstance(event, str):
         event = {'id': 'default', 'option': event}
